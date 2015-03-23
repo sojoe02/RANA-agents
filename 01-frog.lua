@@ -41,7 +41,7 @@ targetColor = {0,0,0}
 
 countDown=0
 
-serialize = require "lib_serialize"
+local table = require "lib_table"
 
 -- Environment variables:
 
@@ -71,11 +71,11 @@ function func.soundIntensity.f2(...)
 	if not power then power = 50 end
 	if not time then time = 0 end
 
-	--l_debug("X:"..x.." Y:"..y.." power:"..power)
-	
-	
-	local A = math.pi*4*math.square(posX, posY, setPosX, setPosY)
-	return power/A
+	local l = math.sqrt(x*x + y*y)/power-1
+	return 1/(math.exp(l)+1)
+
+	--local A = math.pi*4*math.sqrt(l_distance(posX, posY, setPosX, setPosY))
+	--return power/A
 end
 
 --The event processing function, needed for postprocessing:
@@ -107,11 +107,11 @@ function initAuton(x, y, id, macroFactor, timeResolution)
 	--get the environment size
 	env_width, env_height = l_getEnvironmentSize()
 	
-	l_debug("Agent #: " .. id .. " has been initialized")
+	--l_debug("Agent #: " .. id .. " has been initialized")
 	shorestring = l_getSharedString("shoreColor")
-	l_debug("Shared string is "..shorestring)
+	--l_debug("Shared string is "..shorestring)
 
-	shoreColor = serialize.loadTable(l_getSharedString("shoreColor"))
+	shoreColor = table.deserialize(l_getSharedString("shoreColor"))
 
 	convergence = l_getRandomFloat(1.2,3.5)
 
@@ -127,14 +127,16 @@ end
 --Determine whether or not this Auton will initiate an event.
 function initiateEvent()
 
-	countDown = countDown - (1/(macroF * timeRes))
+	countDown = countDown - (macroF * timeRes)
 
 	if countDown <= 0 then
 
 		if Active_State == S_Moving then
 
 			if scan(shoreColor,2) then
-				Active_State == S_Waiting
+			--	Active_State = S_Waiting
+				l_debug("agent: "..ID.."at perch")
+				Active_State = S_Waiting
 			else 
 				move(3, convergence)
 			end
@@ -143,7 +145,7 @@ function initiateEvent()
 			
 			countDown = 3
 			Active_State = S_Calling
-			return 343, "", "call", 0
+			return 343, "{duration=1}", "call", 0
 
 		elseif Active_State == S_Calling then
 			

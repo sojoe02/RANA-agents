@@ -20,11 +20,15 @@
 --
 ----end_license--
 
+local ID
+
 -- Init of the lua frog, function called upon initilization of the LUA auton:
 function initAuton(x, y, id, macroFactor, timeResolution)
 
 	posX = 0
 	posY = 0
+
+	ID = id
 
 	l_debug(macroFactor.." : "..timeResolution)
 	
@@ -34,12 +38,12 @@ function initAuton(x, y, id, macroFactor, timeResolution)
 
 	--build the environment(using the environment library):
 	local env = require "lib_env_lake"
-	local serialize = require "lib_serialize"
+	local table = require "lib_table"
 
 	env.buildEnvironment()
 	local waterColor, shoreColor, landColor = env.getColors()
 
-	l_addSharedString("shoreColor", serialize.table(shoreColor))
+	l_addSharedString("shoreColor", table.serialize(shoreColor))
 
 	local frog_filename = "01-frog.lua"
 	local amount = 50
@@ -70,12 +74,13 @@ function initAuton(x, y, id, macroFactor, timeResolution)
 		l_addAgent(aPosX, aPosY, 0, path, frog_filename)
 	end
 
-	l_removeAgent(id)
-
 end
 
 -- Event Handling:
 function handleEvent(origX, origY, origID, origDesc, origTable)
+
+	l_removeAgent(ID)
+
 	return 0,0,0,"null"
 end	
 
