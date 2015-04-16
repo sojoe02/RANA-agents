@@ -110,7 +110,14 @@ end
 
 --Determine whether or not this Auton will initiate an event.
 function initiateEvent()
-
+	--local i_counter =0
+	--for i_loop1=0,9 do
+    --	for i_loop2=0,31999 do
+    --   	for i_loop3=0,31999 do
+    --       	 i_counter = i_counter + 1
+    --    	end
+    --	end
+	--end
 	countDown = countDown - (macroF * timeRes)
 		
 	if countDown <= 0 then
